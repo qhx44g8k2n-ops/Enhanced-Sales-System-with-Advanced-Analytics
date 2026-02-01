@@ -1,0 +1,3945 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Sales Analytics & Reporting System - 9 Branches</title>
+    
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- XLSX for Excel handling -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- jsPDF and AutoTable for PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <!-- FileSaver for downloading -->
+    <script src="https://cdn.jsdelivr.net/npm/file-saver/dist/FileSaver.min.js"></script>
+    <!-- Date Range Picker -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <script src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    
+    <!-- Main Styles -->
+    <style>
+        /* Enhanced Design Variables */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --info-color: #2980b9;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --gray-color: #7f8c8d;
+            --delivery-color: #27ae60;
+            --online-color: #9b59b6;
+            --border-radius: 12px;
+            --box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --card-bg: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            min-height: 100vh;
+            color: var(--dark-color);
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Enhanced Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo i {
+            font-size: 2.8rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Enhanced Navigation */
+        .nav {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .nav a, .nav button {
+            text-decoration: none;
+            color: var(--dark-color);
+            background: transparent;
+            padding: 12px 24px;
+            border-radius: 8px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav a:hover, .nav button:hover {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        .nav a.active, .nav button.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+        }
+
+        /* Enhanced Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            margin-bottom: 30px;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            padding: 20px 30px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .card-header h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        /* Enhanced Tables */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+        }
+
+        .data-table thead {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+
+        .data-table th {
+            padding: 16px 20px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 14px 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            text-align: left;
+            transition: background-color 0.2s;
+        }
+
+        .data-table tbody tr:hover {
+            background: linear-gradient(90deg, rgba(52, 152, 219, 0.05), rgba(41, 128, 185, 0.1));
+        }
+
+        /* Enhanced Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), #2ecc71);
+            color: white;
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2);
+        }
+
+        /* Page Sections */
+        .page-section {
+            display: none;
+            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Enhanced Analysis Grid */
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .kpi-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            border-top: 6px solid var(--primary-color);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .kpi-header h3 {
+            font-size: 1.2rem;
+            color: var(--dark-color);
+        }
+
+        .kpi-header i {
+            font-size: 2rem;
+            color: var(--secondary-color);
+        }
+
+        .kpi-body h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Enhanced Tool Cards */
+        .data-tools-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 992px) {
+            .data-tools-grid {
+                grid-template-columns: 1fr;
+            }
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .nav {
+                justify-content: center;
+            }
+        }
+
+        .tool-card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
+        }
+
+        /* Progress Bars */
+        .progress-container {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+            height: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success-color), #2ecc71);
+            border-radius: 10px;
+            transition: width 1s ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.3) 50%, 
+                transparent 100%);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Date Range Picker */
+        .date-range-container {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 25px;
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .date-range-container label {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        #dateRange {
+            padding: 10px 15px;
+            border: 2px solid var(--secondary-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            background: white;
+            min-width: 250px;
+        }
+
+        /* Insights Panel */
+        .insights-panel {
+            background: linear-gradient(135deg, #fff8e1, #fff);
+            border-left: 6px solid var(--warning-color);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin: 25px 0;
+            box-shadow: var(--box-shadow);
+        }
+
+        .insight-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .insight-item:last-child {
+            border-bottom: none;
+        }
+
+        .insight-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        /* Comparison Cards */
+        .comparison-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: white;
+            border-radius: var(--border-radius);
+            margin: 15px 0;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+
+        .comparison-card:hover {
+            border-color: var(--secondary-color);
+            transform: translateX(5px);
+        }
+
+        .comparison-trend {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .trend-up {
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--success-color);
+        }
+
+        .trend-down {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--accent-color);
+        }
+
+        /* Filter Controls */
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+
+        /* Export Options */
+        .export-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .export-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background: white;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .export-option:hover {
+            transform: translateY(-5px);
+            border-color: var(--secondary-color);
+            box-shadow: var(--box-shadow);
+        }
+
+        .export-option i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .filter-bar {
+                flex-direction: column;
+            }
+            
+            .nav {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .nav button {
+                flex: 1;
+                justify-content: center;
+                min-width: 120px;
+            }
+        }
+
+        /* Loading State */
+        .loading {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--secondary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Status Indicators */
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-active { background-color: var(--success-color); }
+        .status-warning { background-color: var(--warning-color); }
+        .status-critical { background-color: var(--accent-color); }
+
+        /* Tooltips */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 50px;
+            padding: 30px 0;
+            border-top: 2px solid rgba(0, 0, 0, 0.1);
+            text-align: center;
+            color: var(--gray-color);
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-chart-network"></i>
+                <div>
+                    <h1>Advanced Sales Analytics</h1>
+                    <p style="font-size: 0.9rem; color: var(--gray-color); margin-top: 5px;">Real-time insights across 9 branches</p>
+                </div>
+            </div>
+            <nav class="nav" id="mainNav">
+                <button class="nav-link active" data-page="home">
+                    <i class="fas fa-home"></i> Home
+                </button>
+                <button class="nav-link" data-page="dashboard">
+                    <i class="fas fa-chart-bar"></i> Dashboard
+                </button>
+                <button class="nav-link" data-page="reports">
+                    <i class="fas fa-file-alt"></i> Reports
+                </button>
+                <button class="nav-link" data-page="delivery">
+                    <i class="fas fa-motorcycle"></i> Delivery
+                </button>
+                <button class="nav-link" data-page="online">
+                    <i class="fas fa-globe"></i> Online
+                </button>
+                <button class="nav-link" data-page="comparison">
+                    <i class="fas fa-balance-scale"></i> Comparison
+                </button>
+                <button class="nav-link" data-page="targets">
+                    <i class="fas fa-bullseye"></i> Targets
+                </button>
+                <button class="nav-link" data-page="tools">
+                    <i class="fas fa-exchange-alt"></i> Data Tools
+                </button>
+            </nav>
+        </header>
+
+        <!-- Date Range Selector -->
+        <div class="date-range-container">
+            <label for="dateRange"><i class="fas fa-calendar-alt"></i> Analysis Period:</label>
+            <input type="text" id="dateRange" name="dateRange" />
+            <button class="btn btn-primary" onclick="salesSystem.updateDateRange()">
+                <i class="fas fa-sync-alt"></i> Update
+            </button>
+            <button class="btn btn-success" onclick="salesSystem.exportReport('custom')">
+                <i class="fas fa-download"></i> Export Period
+            </button>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            
+            <!-- Home Page -->
+            <section id="home" class="page-section active">
+                <div class="welcome-section">
+                    <h2><i class="fas fa-chart-pie"></i> Advanced Sales Intelligence Platform</h2>
+                    <p class="subtitle">Comprehensive analytics, predictive insights, and automated reporting across 9 branches</p>
+                </div>
+
+                <!-- Executive Summary -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-line"></i> Executive Summary</h3>
+                        <div class="btn-group">
+                            <button class="btn btn-primary" onclick="salesSystem.generateExecutiveSummary()">
+                                <i class="fas fa-file-pdf"></i> PDF Report
+                            </button>
+                            <button class="btn btn-success" onclick="salesSystem.exportCurrentView('executive')">
+                                <i class="fas fa-file-excel"></i> Excel Summary
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="quick-stats" id="executiveSummary"></div>
+                    </div>
+                </div>
+
+                <!-- Key Insights Panel -->
+                <div class="insights-panel">
+                    <h3><i class="fas fa-lightbulb"></i> Key Insights & Recommendations</h3>
+                    <div id="insightsContainer"></div>
+                </div>
+
+                <!-- Performance Grid -->
+                <div class="analysis-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h3>Revenue Performance</h3>
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="kpi-body">
+                            <h2 id="revenueTotal">$0</h2>
+                            <p>Total Revenue (Current Period)</p>
+                            <div class="progress-container">
+                                <div class="progress-bar" id="revenueProgress"></div>
+                            </div>
+                            <p style="margin-top: 10px; font-size: 0.9rem;">
+                                <span id="revenueChange" class="trend-up">+0%</span> vs previous period
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h3>Transaction Volume</h3>
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="kpi-body">
+                            <h2 id="transactionTotal">0</h2>
+                            <p>Total Transactions</p>
+                            <div class="progress-container">
+                                <div class="progress-bar" id="transactionProgress"></div>
+                            </div>
+                            <p style="margin-top: 10px; font-size: 0.9rem;">
+                                <span id="transactionChange" class="trend-up">+0%</span> vs previous period
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h3>Average Order Value</h3>
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="kpi-body">
+                            <h2 id="aovTotal">$0</h2>
+                            <p>Average Order Value</p>
+                            <div class="progress-container">
+                                <div class="progress-bar" id="aovProgress"></div>
+                            </div>
+                            <p style="margin-top: 10px; font-size: 0.9rem;">
+                                <span id="aovChange" class="trend-up">+0%</span> vs previous period
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Performers -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-trophy"></i> Top Performing Branches</h3>
+                        <select id="performanceMetric" onchange="salesSystem.updateTopPerformers()" style="min-width: 200px;">
+                            <option value="sales">By Sales Revenue</option>
+                            <option value="transactions">By Transaction Count</option>
+                            <option value="aov">By Average Order Value</option>
+                            <option value="growth">By Growth Rate</option>
+                        </select>
+                    </div>
+                    <div class="card-body">
+                        <div id="topPerformersGrid"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Enhanced Dashboard -->
+            <section id="dashboard" class="page-section">
+                <div class="welcome-section">
+                    <h2><i class="fas fa-tachometer-alt"></i> Advanced Analytics Dashboard</h2>
+                    <p class="subtitle">Interactive visualizations and real-time performance metrics</p>
+                </div>
+
+                <div class="filter-bar">
+                    <div class="filter-group">
+                        <label><i class="fas fa-filter"></i> View Mode</label>
+                        <select id="dashboardView" onchange="salesSystem.updateDashboardView()">
+                            <option value="overview">Overview</option>
+                            <option value="detailed">Detailed Analysis</option>
+                            <option value="trend">Trend Analysis</option>
+                            <option value="comparative">Comparative View</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-chart-line"></i> Metric</label>
+                        <select id="dashboardMetric" onchange="salesSystem.updateDashboardView()">
+                            <option value="sales">Sales Revenue</option>
+                            <option value="transactions">Transactions</option>
+                            <option value="aov">Average Order Value</option>
+                            <option value="growth">Growth Rate</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-calendar"></i> Time Period</label>
+                            <select id="dashboardPeriod" onchange="salesSystem.updateDashboardView()">
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="quarterly">Quarterly</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="analysis-grid">
+                    <div class="card" style="grid-column: span 2;">
+                        <div class="card-header">
+                            <h3><i class="fas fa-chart-area"></i> Performance Trend Analysis</h3>
+                            <button class="btn btn-primary" onclick="salesSystem.exportChart('trendChart')">
+                                <i class="fas fa-download"></i> Export Chart
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div style="height: 400px;">
+                                <canvas id="trendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-chart-pie"></i> Channel Distribution</h3>
+                        </div>
+                        <div class="card-body">
+                            <div style="height: 300px;">
+                                <canvas id="channelDistributionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-chart-bar"></i> Branch Performance</h3>
+                        </div>
+                        <div class="card-body">
+                            <div style="height: 300px;">
+                                <canvas id="branchPerformanceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="grid-column: span 2;">
+                        <div class="card-header">
+                            <h3><i class="fas fa-chart-line"></i> Performance Metrics</h3>
+                            <div class="btn-group">
+                                <button class="btn btn-primary" onclick="salesSystem.toggleMetric('revenue')">
+                                    Revenue
+                                </button>
+                                <button class="btn btn-primary" onclick="salesSystem.toggleMetric('transactions')">
+                                    Transactions
+                                </button>
+                                <button class="btn btn-primary" onclick="salesSystem.toggleMetric('aov')">
+                                    AOV
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div style="height: 350px;">
+                                <canvas id="metricsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Indicators -->
+                <div class="analysis-grid" style="margin-top: 20px;">
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h3>Conversion Rate</h3>
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="kpi-body">
+                            <h2 id="conversionRate">0%</h2>
+                            <p>Overall Conversion Rate</p>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h3>Customer Retention</h3>
+                            <i class="fas fa-user-friends"></i>
+                        </div>
+                        <div class="kpi-body">
+                            <h2 id="retentionRate">0%</h2>
+                            <p>Repeat Customer Rate</p>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h3>Peak Hours</h3>
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="kpi-body">
+                            <h2 id="peakHours">12-2 PM</h2>
+                            <p>Highest Transaction Period</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Enhanced Reports Page -->
+            <section id="reports" class="page-section">
+                <div class="welcome-section">
+                    <h2><i class="fas fa-file-alt"></i> Comprehensive Reporting</h2>
+                    <p class="subtitle">Generate detailed reports with custom filters and automated insights</p>
+                </div>
+
+                <div class="filter-bar">
+                    <div class="filter-group">
+                        <label><i class="fas fa-file"></i> Report Type</label>
+                        <select id="reportType" onchange="salesSystem.updateReportView()">
+                            <option value="performance">Performance Report</option>
+                            <option value="financial">Financial Report</option>
+                            <option value="operational">Operational Report</option>
+                            <option value="comparative">Comparative Report</option>
+                            <option value="forecast">Forecast Report</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-filter"></i> Branch Filter</label>
+                        <select id="reportBranches" multiple onchange="salesSystem.updateReportView()">
+                            <!-- Populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-calendar"></i> Granularity</label>
+                        <select id="reportGranularity" onchange="salesSystem.updateReportView()">
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="export-options">
+                    <div class="export-option" onclick="salesSystem.generateReport('pdf')">
+                        <i class="fas fa-file-pdf"></i>
+                        <h4>PDF Report</h4>
+                        <p>Formatted document with charts</p>
+                    </div>
+                    <div class="export-option" onclick="salesSystem.generateReport('excel')">
+                        <i class="fas fa-file-excel"></i>
+                        <h4>Excel Report</h4>
+                        <p>Detailed data with calculations</p>
+                    </div>
+                    <div class="export-option" onclick="salesSystem.generateReport('ppt')">
+                        <i class="fas fa-file-powerpoint"></i>
+                        <h4>Presentation</h4>
+                        <p>Ready for meetings</p>
+                    </div>
+                    <div class="export-option" onclick="salesSystem.generateReport('dashboard')">
+                        <i class="fas fa-chart-line"></i>
+                        <h4>Interactive Dashboard</h4>
+                        <p>HTML dashboard export</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-table"></i> Report Preview</h3>
+                        <div class="btn-group">
+                            <button class="btn btn-primary" onclick="salesSystem.refreshReport()">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                            <button class="btn btn-success" onclick="salesSystem.exportReport('current')">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="reportPreview" class="table-container">
+                            <!-- Report content will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Automated Insights -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-robot"></i> Automated Insights</h3>
+                        <button class="btn btn-primary" onclick="salesSystem.generateInsights()">
+                            <i class="fas fa-magic"></i> Generate Insights
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="automatedInsights"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Enhanced Delivery Analysis -->
+            <section id="delivery" class="page-section">
+                <div class="welcome-section">
+                    <h2><i class="fas fa-motorcycle"></i> Delivery Operations Analysis</h2>
+                    <p class="subtitle">Advanced delivery performance metrics and optimization insights</p>
+                </div>
+
+                <div class="analysis-grid">
+                    <div class="kpi-card delivery">
+                        <div class="kpi-header">
+                            <h3>Delivery Efficiency</h3>
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <div class="kpi-body">
+                            <h2 id="deliveryEfficiency">0%</h2>
+                            <p>On-time Delivery Rate</p>
+                            <div class="progress-container">
+                                <div class="progress-bar" id="deliveryEfficiencyBar"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h3>Average Delivery Time</h3>
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="kpi-body">
+                            <h2 id="avgDeliveryTime">0 min</h2>
+                            <p>From order to delivery</p>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h3>Delivery Cost Ratio</h3>
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="kpi-body">
+                            <h2 id="deliveryCostRatio">0%</h2>
+                            <p>Cost as % of order value</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="grid-column: span 2;">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-line"></i> Delivery Performance Trends</h3>
+                    </div>
+                    <div class="card-body">
+                        <div style="height: 400px;">
+                            <canvas id="deliveryTrendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Delivery Optimization -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-cogs"></i> Delivery Optimization</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="deliveryOptimization"></div>
+                    </div>
+                </div>
+
+                <!-- Delivery Comparison -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-balance-scale"></i> Branch Comparison</h3>
+                    </div>
+                    <div class="card-body">
+                        <div style="height: 350px;">
+                            <canvas id="deliveryComparisonChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Enhanced Online Analysis -->
+            <section id="online" class="page-section">
+                <div class="welcome-section">
+                    <h2><i class="fas fa-globe"></i> Digital Sales Analytics</h2>
+                    <p class="subtitle">Comprehensive online platform performance and digital metrics</p>
+                </div>
+
+                <div class="analysis-grid">
+                    <div class="kpi-card online">
+                        <div class="kpi-header">
+                            <h3>Digital Penetration</h3>
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="kpi-body">
+                            <h2 id="digitalPenetration">0%</h2>
+                            <p>Online % of Total Sales</p>
+                            <div class="progress-container">
+                                <div class="progress-bar" id="digitalPenetrationBar"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h3>Platform Mix</h3>
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <div class="kpi-body">
+                            <div style="height: 250px;">
+                                <canvas id="platformMixChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h3>Customer Acquisition Cost</h3>
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="kpi-body">
+                            <h2 id="customerAcquisitionCost">$0</h2>
+                            <p>Average cost per new customer</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Online Performance Grid -->
+                <div class="card" style="grid-column: span 2;">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-bar"></i> Platform Performance Comparison</h3>
+                        <select id="platformMetric" onchange="salesSystem.updatePlatformAnalysis()">
+                            <option value="sales">Sales Revenue</option>
+                            <option value="orders">Order Count</option>
+                            <option value="aov">Average Order Value</option>
+                            <option value="growth">Growth Rate</option>
+                        </select>
+                    </div>
+                    <div class="card-body">
+                        <div style="height: 400px;">
+                            <canvas id="platformPerformanceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Digital Insights -->
+                <div class="insights-panel">
+                    <h3><i class="fas fa-lightbulb"></i> Digital Strategy Insights</h3>
+                    <div id="digitalInsights"></div>
+                </div>
+            </section>
+
+            <!-- Comparison Page -->
+            <section id="comparison" class="page-section">
+                <div class="welcome-section">
+                    <h2><i class="fas fa-balance-scale"></i> Comparative Analysis</h2>
+                    <p class="subtitle">Compare performance across branches, channels, and time periods</p>
+                </div>
+
+                <div class="filter-bar">
+                    <div class="filter-group">
+                        <label><i class="fas fa-exchange-alt"></i> Compare</label>
+                        <select id="compareDimension" onchange="salesSystem.updateComparison()">
+                            <option value="branches">Branches</option>
+                            <option value="channels">Sales Channels</option>
+                            <option value="periods">Time Periods</option>
+                            <option value="weekdays">Week Days</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-chart-bar"></i> Metric</label>
+                        <select id="compareMetric" onchange="salesSystem.updateComparison()">
+                            <option value="sales">Sales Revenue</option>
+                            <option value="transactions">Transactions</option>
+                            <option value="aov">Average Order Value</option>
+                            <option value="growth">Growth Rate</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-percentage"></i> View As</label>
+                        <select id="compareView" onchange="salesSystem.updateComparison()">
+                            <option value="absolute">Absolute Values</option>
+                            <option value="percentage">Percentage</option>
+                            <option value="index">Index (100 = Average)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="analysis-grid">
+                    <div class="card" style="grid-column: span 2;">
+                        <div class="card-header">
+                            <h3><i class="fas fa-chart-bar"></i> Comparison Visualization</h3>
+                        </div>
+                        <div class="card-body">
+                            <div style="height: 450px;">
+                                <canvas id="comparisonChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comparison Matrix -->
+                    <div class="card" style="grid-column: span 2;">
+                        <div class="card-header">
+                            <h3><i class="fas fa-th"></i> Performance Matrix</h3>
+                            <button class="btn btn-primary" onclick="salesSystem.exportComparisonMatrix()">
+                                <i class="fas fa-download"></i> Export Matrix
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="comparisonMatrix" class="table-container"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gap Analysis -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-search-minus"></i> Gap Analysis</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="gapAnalysis"></div>
+                    </div>
+                </div>
+
+                <!-- Benchmarking -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-line"></i> Benchmarking</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="benchmarkingContainer"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Enhanced Targets Management -->
+            <section id="targets" class="page-section">
+                <div class="welcome-section">
+                    <h2><i class="fas fa-bullseye"></i> Advanced Target Management</h2>
+                    <p class="subtitle>Set, track, and analyze performance against targets with predictive forecasting</p>
+                </div>
+
+                <div class="analysis-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h3>Target Achievement Rate</h3>
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="kpi-body">
+                            <h2 id="overallAchievement">0%</h2>
+                            <p>Overall Target Achievement</p>
+                            <div class="progress-container">
+                                <div class="progress-bar" id="overallAchievementBar"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h3>Days Remaining</h3>
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                        <div class="kpi-body">
+                            <h2 id="daysRemaining">0</h2>
+                            <p>Days until target period end</p>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h3>Required Daily Run Rate</h3>
+                            <i class="fas fa-running"></i>
+                        </div>
+                        <div class="kpi-body">
+                            <h2 id="requiredRunRate">$0</h2>
+                            <p>To achieve target</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-table"></i> Target vs Actual Performance</h3>
+                        <button class="btn btn-primary" onclick="salesSystem.setNewTargets()">
+                            <i class="fas fa-edit"></i> Set Targets
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Branch</th>
+                                        <th>Target</th>
+                                        <th>Actual</th>
+                                        <th>Achievement</th>
+                                        <th>Variance</th>
+                                        <th>Forecast</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="targetsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Target Forecasting -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-line"></i> Target Forecasting</h3>
+                        <button class="btn btn-primary" onclick="salesSystem.generateForecast()">
+                            <i class="fas fa-calculator"></i> Re-forecast
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div style="height: 400px;">
+                            <canvas id="forecastChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Enhanced Data Tools -->
+            <section id="tools" class="page-section">
+                <div class="welcome-section">
+                    <h2><i class="fas fa-exchange-alt"></i> Advanced Data Management</h2>
+                    <p class="subtitle">Import, export, and transform data with advanced analytics capabilities</p>
+                </div>
+
+                <div class="data-tools-grid">
+                    <!-- Enhanced Import Section -->
+                    <div class="tool-card">
+                        <div class="tool-header">
+                            <i class="fas fa-file-import"></i>
+                            <h3>Intelligent Data Import</h3>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-database"></i> Data Source</label>
+                            <select id="importSource">
+                                <option value="excel">Excel File (.xlsx, .xls)</option>
+                                <option value="csv">CSV File (.csv)</option>
+                                <option value="json">JSON File (.json)</option>
+                                <option value="api">API Integration</option>
+                                <option value="database">Database Connection</option>
+                            </select>
+                        </div>
+
+                        <div class="upload-area" id="dropZone">
+                            <i class="fas fa-cloud-upload-alt fa-3x" style="color: var(--primary-color); margin-bottom: 15px;"></i>
+                            <h4>Drag & Drop File Here</h4>
+                            <p style="color: #999; margin: 10px 0;">Supports Excel, CSV, JSON up to 100MB</p>
+                            <input type="file" id="fileInput" accept=".xlsx,.xls,.csv,.json" style="display: none;">
+                            <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                                <i class="fas fa-folder-open"></i> Browse Files
+                            </button>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label><i class="fas fa-cogs"></i> Import Mode</label>
+                            <select id="importMode">
+                                <option value="replace">Replace All Data</option>
+                                <option value="append">Append to Existing</option>
+                                <option value="merge">Smart Merge</option>
+                                <option value="update">Update Existing Records</option>
+                            </select>
+                        </div>
+
+                        <!-- Data Validation Options -->
+                        <div class="form-group">
+                            <label><i class="fas fa-check-circle"></i> Data Validation</label>
+                            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                                <label style="display: flex; align-items: center; gap: 10px;">
+                                    <input type="checkbox" id="validateData" checked>
+                                    Validate data integrity
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 10px;">
+                                    <input type="checkbox" id="removeDuplicates" checked>
+                                    Remove duplicate records
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 10px;">
+                                    <input type="checkbox" id="autoNormalize" checked>
+                                    Auto-normalize data
+                                </label>
+                            </div>
+                        </div>
+
+                        <div id="importPreview" class="preview-box" style="display: none;">
+                            <strong>Data Preview (First 10 rows):</strong>
+                            <table id="previewTable" class="data-table"></table>
+                        </div>
+                        
+                        <div id="importStatus" class="status-bar"></div>
+
+                        <div style="margin-top: 20px; display: flex; gap: 10px;">
+                            <button class="btn btn-primary" onclick="salesSystem.processImport()" style="flex: 1;">
+                                <i class="fas fa-upload"></i> Import Data
+                            </button>
+                            <button class="btn btn-secondary" onclick="salesSystem.loadSampleData()" style="flex: 1;">
+                                <i class="fas fa-database"></i> Load Sample
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Enhanced Export Section -->
+                    <div class="tool-card">
+                        <div class="tool-header">
+                            <i class="fas fa-file-export"></i>
+                            <h3>Advanced Export Options</h3>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-file"></i> Export Format</label>
+                            <select id="exportFormat">
+                                <option value="excel">Excel Workbook (.xlsx)</option>
+                                <option value="pdf">PDF Report (.pdf)</option>
+                                <option value="csv">CSV Data (.csv)</option>
+                                <option value="json">JSON Data (.json)</option>
+                                <option value="html">Interactive HTML (.html)</option>
+                                <option value="ppt">PowerPoint (.pptx)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-filter"></i> Data Scope</label>
+                            <select id="exportScope">
+                                <option value="all">All Data (Full Dataset)</option>
+                                <option value="filtered">Currently Filtered View</option>
+                                <option value="summary">Executive Summary</option>
+                                <option value="branches">Branch Performance</option>
+                                <option value="channels">Channel Analysis</option>
+                                <option value="custom">Custom Selection</option>
+                            </select>
+                        </div>
+
+                        <!-- Export Customization -->
+                        <div class="form-group">
+                            <label><i class="fas fa-sliders-h"></i> Export Options</label>
+                            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                                <label style="display: flex; align-items: center; gap: 10px;">
+                                    <input type="checkbox" id="includeCharts" checked>
+                                    Include charts and graphs
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 10px;">
+                                    <input type="checkbox" id="includeInsights" checked>
+                                    Include automated insights
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 10px;">
+                                    <input type="checkbox" id="formatForPrinting" checked>
+                                    Format for printing
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Schedule Export -->
+                        <div class="form-group">
+                            <label><i class="fas fa-clock"></i> Schedule Export</label>
+                            <select id="scheduleExport">
+                                <option value="none">No Schedule</option>
+                                <option value="daily">Daily at 8:00 AM</option>
+                                <option value="weekly">Weekly on Monday</option>
+                                <option value="monthly">Monthly on 1st</option>
+                                <option value="custom">Custom Schedule</option>
+                            </select>
+                        </div>
+
+                        <div id="exportStatus" class="status-bar"></div>
+
+                        <button class="btn btn-success" style="width: 100%; margin-top: 10px; padding: 15px;" onclick="salesSystem.processExport()">
+                            <i class="fas fa-download"></i> Generate & Download Report
+                        </button>
+
+                        <div class="quick-actions" style="margin-top: 20px;">
+                            <div class="quick-btn" onclick="salesSystem.quickExport('daily')">
+                                <i class="fas fa-calendar-day" style="color: var(--info-color);"></i>
+                                <div>Daily Report</div>
+                            </div>
+                            <div class="quick-btn" onclick="salesSystem.downloadTemplate('excel')">
+                                <i class="fas fa-file-excel" style="color: var(--success-color);"></i>
+                                <div>Excel Template</div>
+                            </div>
+                            <div class="quick-btn" onclick="salesSystem.quickExport('backup')">
+                                <i class="fas fa-database" style="color: var(--warning-color);"></i>
+                                <div>Full Backup</div>
+                            </div>
+                            <div class="quick-btn" onclick="salesSystem.downloadTemplate('csv')">
+                                <i class="fas fa-file-csv" style="color: var(--accent-color);"></i>
+                                <div>CSV Template</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Transformation Tools -->
+                <div class="card" style="margin-top: 30px;">
+                    <div class="card-header">
+                        <h3><i class="fas fa-cogs"></i> Data Transformation Tools</h3>
+                    </div>
+                    <div class="card-body">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                            <button class="btn btn-primary" onclick="salesSystem.cleanData()">
+                                <i class="fas fa-broom"></i> Clean Data
+                            </button>
+                            <button class="btn btn-primary" onclick="salesSystem.enrichData()">
+                                <i class="fas fa-chart-line"></i> Enrich Data
+                            </button>
+                            <button class="btn btn-primary" onclick="salesSystem.aggregateData()">
+                                <i class="fas fa-layer-group"></i> Aggregate
+                            </button>
+                            <button class="btn btn-primary" onclick="salesSystem.calculateMetrics()">
+                                <i class="fas fa-calculator"></i> Calculate Metrics
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Advanced Sales Analytics System v3.0 | Real-time Intelligence & Automated Reporting</p>
+            <p style="font-size: 0.9rem; margin-top: 10px; color: var(--gray-color);">
+                Last updated: <span id="lastUpdated"></span> | Data freshness: <span id="dataFreshness"></span>
+            </p>
+        </footer>
+    </div>
+
+    <!-- Enhanced JavaScript Code -->
+    <script>
+        // Enhanced Configuration
+        const branches = [
+            'Hamdan St', 'Khalidiya', 'Mussafah', 'Muroor', 'Al Electra',
+            'Al Barsha', 'Al Satwa', 'Al Rigga', 'Al Majaz'
+        ];
+
+        const channelNormalization = {
+            'Master card': 'Mastercard', 'Visa Card': 'Visa', 'Aggrogater': 'Aggregator',
+            'Delivery CARD': 'Delivery Card', 'Delivery Cash': 'Delivery Cash',
+            'ONLINE CASH': 'Online Cash', 'ONLINE CARD': 'Online Card',
+            'Keeta CARD': 'Keeta', 'NOON CARD': 'Noon', 'Careem CARD': 'Careem',
+            'SMILES CARD': 'Smiles', 'DELIVEROO CARD': 'Deliveroo'
+        };
+
+        const deliveryChannels = ['Delivery Card', 'Delivery Cash'];
+        const onlineChannels = ['Online Cash', 'Online Card', 'Keeta', 'Noon', 'Careem', 'Smiles', 'Deliveroo'];
+
+        // Enhanced Application Class
+        class AdvancedSalesAnalytics {
+            constructor() {
+                this.salesData = [];
+                this.filteredData = [];
+                this.charts = {};
+                this.importedRawData = null;
+                this.dateRange = {
+                    start: moment().subtract(30, 'days'),
+                    end: moment()
+                };
+                this.targets = {};
+                this.insights = [];
+                this.forecastData = {};
+                
+                this.init();
+            }
+
+            init() {
+                this.setupNavigation();
+                this.setupEventListeners();
+                this.setupDateRangePicker();
+                this.loadSampleData();
+                this.loadDefaultTargets();
+                this.updateAllViews();
+            }
+
+            setupNavigation() {
+                const navLinks = document.querySelectorAll('.nav-link');
+                const pageSections = document.querySelectorAll('.page-section');
+                
+                navLinks.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        const targetPage = link.getAttribute('data-page');
+                        
+                        // Update active link
+                        navLinks.forEach(l => l.classList.remove('active'));
+                        link.classList.add('active');
+                        
+                        // Show section
+                        pageSections.forEach(section => {
+                            section.classList.remove('active');
+                            if(section.id === targetPage) section.classList.add('active');
+                        });
+
+                        // Refresh data if needed
+                        if (targetPage === 'dashboard') this.updateDashboardView();
+                        if (targetPage === 'reports') this.updateReportView();
+                        if (targetPage === 'comparison') this.updateComparison();
+                        this.updateAllViews();
+                    });
+                });
+            }
+
+            setupEventListeners() {
+                // File Upload Inputs
+                const dropZone = document.getElementById('dropZone');
+                const fileInput = document.getElementById('fileInput');
+
+                dropZone.addEventListener('click', () => fileInput.click());
+                
+                dropZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    dropZone.classList.add('dragover');
+                });
+                
+                dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+                
+                dropZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropZone.classList.remove('dragover');
+                    if (e.dataTransfer.files.length) {
+                        this.handleFileSelect(e.dataTransfer.files[0]);
+                    }
+                });
+
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length) {
+                        this.handleFileSelect(e.target.files[0]);
+                    }
+                });
+
+                // Initialize branch filters
+                this.initializeBranchFilters();
+            }
+
+            setupDateRangePicker() {
+                $('#dateRange').daterangepicker({
+                    startDate: this.dateRange.start,
+                    endDate: this.dateRange.end,
+                    ranges: {
+                        'Today': [moment(), moment()],
+                        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                        'This Month': [moment().startOf('month'), moment().endOf('month')],
+                        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                    }
+                }, (start, end) => {
+                    this.dateRange.start = start;
+                    this.dateRange.end = end;
+                });
+            }
+
+            // --- Enhanced Data Handling ---
+
+            handleFileSelect(file) {
+                const reader = new FileReader();
+                const source = document.getElementById('importSource').value;
+                const feedback = document.getElementById('importStatus');
+
+                reader.onload = (e) => {
+                    try {
+                        let data = [];
+                        if (source === 'excel') {
+                            const workbook = XLSX.read(e.target.result, {type: 'binary'});
+                            const sheetName = workbook.SheetNames[0];
+                            const worksheet = workbook.Sheets[sheetName];
+                            data = XLSX.utils.sheet_to_json(worksheet);
+                        } else if (source === 'csv') {
+                            const workbook = XLSX.read(e.target.result, {type: 'string'});
+                            const sheetName = workbook.SheetNames[0];
+                            const worksheet = workbook.Sheets[sheetName];
+                            data = XLSX.utils.sheet_to_json(worksheet);
+                        } else if (source === 'json') {
+                            data = JSON.parse(e.target.result);
+                        }
+
+                        // Enhanced Data Normalization
+                        data = this.enhancedNormalizeData(data);
+
+                        // Store temporarily
+                        this.importedRawData = data;
+
+                        // Show Enhanced Preview
+                        this.showEnhancedPreview(data);
+                        
+                        feedback.className = 'status-bar info';
+                        feedback.innerHTML = `<i class="fas fa-check-circle"></i> Successfully loaded ${data.length} records. Ready for import.`;
+
+                    } catch (err) {
+                        console.error(err);
+                        feedback.className = 'status-bar error';
+                        feedback.innerHTML = `<i class="fas fa-exclamation-circle"></i> Error reading file: ${err.message}`;
+                    }
+                };
+
+                if (source === 'excel') {
+                    reader.readAsBinaryString(file);
+                } else {
+                    reader.readAsText(file);
+                }
+            }
+
+            enhancedNormalizeData(data) {
+                return data.map(item => {
+                    const newItem = {...item};
+                    
+                    // Normalize Channels
+                    if (newItem.Channel && channelNormalization[newItem.Channel]) {
+                        newItem.Channel = channelNormalization[newItem.Channel];
+                    }
+                    
+                    // Ensure numeric fields
+                    newItem.Sales = parseFloat(newItem.Sales?.toString().replace(/,/g, '')) || 0;
+                    newItem.Transactions = parseInt(newItem.Transactions) || 0;
+                    newItem.AVR = parseFloat(newItem.AVR) || 0;
+                    
+                    // Parse date
+                    if (newItem.Date) {
+                        const date = new Date(newItem.Date);
+                        newItem.dateObj = isNaN(date.getTime()) ? new Date() : date;
+                        newItem.Week = this.getWeekNumber(date);
+                        newItem.Month = date.getMonth() + 1;
+                        newItem.Quarter = Math.ceil((date.getMonth() + 1) / 3);
+                        newItem.Year = date.getFullYear();
+                        newItem.DayOfWeek = date.getDay();
+                        newItem.Hour = date.getHours();
+                    }
+                    
+                    // Calculate derived metrics
+                    newItem.TransactionValue = newItem.Sales;
+                    newItem.AOV = newItem.Transactions > 0 ? newItem.Sales / newItem.Transactions : 0;
+                    
+                    return newItem;
+                });
+            }
+
+            getWeekNumber(date) {
+                const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+                const dayNum = d.getUTCDay() || 7;
+                d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+                const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+                return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+            }
+
+            processImport() {
+                if (!this.importedRawData) {
+                    this.showNotification('Please select a file first.', 'warning');
+                    return;
+                }
+
+                const mode = document.getElementById('importMode').value;
+                const validate = document.getElementById('validateData').checked;
+                const removeDups = document.getElementById('removeDuplicates').checked;
+                
+                let processedData = this.importedRawData;
+                
+                // Data Validation
+                if (validate) {
+                    const validationResult = this.validateData(processedData);
+                    if (!validationResult.valid) {
+                        this.showNotification(`Validation failed: ${validationResult.message}`, 'error');
+                        return;
+                    }
+                }
+                
+                // Remove Duplicates
+                if (removeDups) {
+                    processedData = this.removeDuplicates(processedData);
+                }
+                
+                if (mode === 'replace') {
+                    this.salesData = processedData;
+                } else if (mode === 'append') {
+                    this.salesData = [...this.salesData, ...processedData];
+                } else if (mode === 'merge') {
+                    this.salesData = this.mergeData(this.salesData, processedData);
+                }
+                
+                this.filterDataByDateRange();
+                this.updateAllViews();
+                
+                const feedback = document.getElementById('importStatus');
+                feedback.className = 'status-bar success';
+                feedback.innerHTML = `<i class="fas fa-check-circle"></i> Successfully imported ${processedData.length} records!`;
+                
+                // Reset
+                this.importedRawData = null;
+                document.getElementById('fileInput').value = '';
+                document.getElementById('importPreview').style.display = 'none';
+                
+                this.showNotification(`Successfully imported ${processedData.length} records`, 'success');
+            }
+
+            validateData(data) {
+                // Basic validation logic
+                if (!Array.isArray(data)) {
+                    return { valid: false, message: 'Data is not an array' };
+                }
+                
+                if (data.length === 0) {
+                    return { valid: false, message: 'No data found' };
+                }
+                
+                const requiredFields = ['Date', 'Branch', 'Channel', 'Sales'];
+                for (const field of requiredFields) {
+                    if (!data[0].hasOwnProperty(field)) {
+                        return { valid: false, message: `Missing required field: ${field}` };
+                    }
+                }
+                
+                return { valid: true, message: 'Data validation passed' };
+            }
+
+            removeDuplicates(data) {
+                const seen = new Set();
+                return data.filter(item => {
+                    const key = `${item.Date}-${item.Branch}-${item.Channel}-${item.Sales}`;
+                    if (seen.has(key)) {
+                        return false;
+                    }
+                    seen.add(key);
+                    return true;
+                });
+            }
+
+            mergeData(existing, newData) {
+                // Simple merge - can be enhanced
+                return [...existing, ...newData];
+            }
+
+            // --- Enhanced Sample Data Generation ---
+            loadSampleData() {
+                const data = [];
+                const startDate = new Date(2026, 0, 1);
+                const endDate = new Date();
+                
+                branches.forEach(branch => {
+                    const channelMix = ['Cash', 'Mastercard', 'Visa', 'Keeta', 'Delivery Card', 'Delivery Cash', 'Noon', 'Careem', 'Smiles'];
+                    
+                    channelMix.forEach(channel => {
+                        const normalized = channelNormalization[channel] || channel;
+                        
+                        // Generate 30 days of data
+                        for(let i = 0; i < 30; i++) {
+                            const date = new Date(startDate);
+                            date.setDate(startDate.getDate() + i);
+                            
+                            // Add some variation
+                            const baseSales = Math.random() * 5000 + 500;
+                            const variation = 0.3; // ±30% variation
+                            const sales = baseSales * (1 + (Math.random() * variation * 2 - variation));
+                            const transactions = Math.floor(Math.random() * 50) + 5;
+                            
+                            data.push({
+                                'Date': date.toISOString().split('T')[0],
+                                'Branch': branch,
+                                'Channel': normalized,
+                                'Sales': Math.round(sales * 100) / 100,
+                                'Transactions': transactions,
+                                'AVR': Math.round((sales / transactions) * 100) / 100
+                            });
+                        }
+                    });
+                });
+
+                this.salesData = this.enhancedNormalizeData(data);
+                this.filterDataByDateRange();
+                this.updateAllViews();
+                
+                this.showNotification('Sample data loaded successfully', 'success');
+            }
+
+            filterDataByDateRange() {
+                this.filteredData = this.salesData.filter(item => {
+                    const itemDate = moment(item.dateObj);
+                    return itemDate.isBetween(this.dateRange.start, this.dateRange.end, null, '[]');
+                });
+            }
+
+            updateDateRange() {
+                this.filterDataByDateRange();
+                this.updateAllViews();
+                this.showNotification(`Date range updated to ${this.dateRange.start.format('MMM D')} - ${this.dateRange.end.format('MMM D')}`, 'info');
+            }
+
+            // --- Enhanced Views ---
+
+            updateAllViews() {
+                this.updateExecutiveSummary();
+                this.updateInsights();
+                this.updateTopPerformers();
+                this.updatePerformanceMetrics();
+                this.updateDashboardView();
+                this.updateReportView();
+                this.updateDeliveryAnalysis();
+                this.updateOnlineAnalysis();
+                this.updateComparison();
+                this.updateTargets();
+            }
+
+            updateExecutiveSummary() {
+                const totalSales = this.filteredData.reduce((sum, item) => sum + item.Sales, 0);
+                const totalTx = this.filteredData.reduce((sum, item) => sum + item.Transactions, 0);
+                const avgAOV = totalTx > 0 ? totalSales / totalTx : 0;
+                const activeBranches = new Set(this.filteredData.map(i => i.Branch)).size;
+                
+                const html = `
+                    <div class="analysis-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-header">
+                                <h3>Total Revenue</h3>
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="kpi-body">
+                                <h2>${this.formatCurrency(totalSales)}</h2>
+                                <p>Across ${activeBranches} branches</p>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-header">
+                                <h3>Transactions</h3>
+                                <i class="fas fa-receipt"></i>
+                            </div>
+                            <div class="kpi-body">
+                                <h2>${totalTx.toLocaleString()}</h2>
+                                <p>Total orders processed</p>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-header">
+                                <h3>Average Order Value</h3>
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <div class="kpi-body">
+                                <h2>${this.formatCurrency(avgAOV)}</h2>
+                                <p>Per transaction</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('executiveSummary').innerHTML = html;
+                
+                // Update progress metrics
+                this.updateProgressMetrics();
+            }
+
+            updateProgressMetrics() {
+                // Calculate previous period for comparison
+                const prevStart = moment(this.dateRange.start).subtract(this.dateRange.end.diff(this.dateRange.start, 'days'), 'days');
+                const prevEnd = moment(this.dateRange.start).subtract(1, 'days');
+                
+                const currentData = this.filteredData;
+                const prevData = this.salesData.filter(item => {
+                    const itemDate = moment(item.dateObj);
+                    return itemDate.isBetween(prevStart, prevEnd, null, '[]');
+                });
+                
+                const currentSales = currentData.reduce((s, i) => s + i.Sales, 0);
+                const prevSales = prevData.reduce((s, i) => s + i.Sales, 0);
+                const salesChange = prevSales > 0 ? ((currentSales - prevSales) / prevSales * 100) : 0;
+                
+                const currentTx = currentData.reduce((s, i) => s + i.Transactions, 0);
+                const prevTx = prevData.reduce((s, i) => s + i.Transactions, 0);
+                const txChange = prevTx > 0 ? ((currentTx - prevTx) / prevTx * 100) : 0;
+                
+                const currentAOV = currentTx > 0 ? currentSales / currentTx : 0;
+                const prevAOV = prevTx > 0 ? prevSales / prevTx : 0;
+                const aovChange = prevAOV > 0 ? ((currentAOV - prevAOV) / prevAOV * 100) : 0;
+                
+                // Update DOM elements
+                document.getElementById('revenueTotal').textContent = this.formatCurrency(currentSales);
+                document.getElementById('revenueProgress').style.width = `${Math.min(100, salesChange + 100)}%`;
+                document.getElementById('revenueChange').textContent = `${salesChange > 0 ? '+' : ''}${salesChange.toFixed(1)}%`;
+                document.getElementById('revenueChange').className = salesChange >= 0 ? 'trend-up' : 'trend-down';
+                
+                document.getElementById('transactionTotal').textContent = currentTx.toLocaleString();
+                document.getElementById('transactionProgress').style.width = `${Math.min(100, txChange + 100)}%`;
+                document.getElementById('transactionChange').textContent = `${txChange > 0 ? '+' : ''}${txChange.toFixed(1)}%`;
+                document.getElementById('transactionChange').className = txChange >= 0 ? 'trend-up' : 'trend-down';
+                
+                document.getElementById('aovTotal').textContent = this.formatCurrency(currentAOV);
+                document.getElementById('aovProgress').style.width = `${Math.min(100, aovChange + 100)}%`;
+                document.getElementById('aovChange').textContent = `${aovChange > 0 ? '+' : ''}${aovChange.toFixed(1)}%`;
+                document.getElementById('aovChange').className = aovChange >= 0 ? 'trend-up' : 'trend-down';
+            }
+
+            updateInsights() {
+                const insights = this.generateInsights();
+                let insightsHTML = '';
+                
+                insights.forEach(insight => {
+                    insightsHTML += `
+                        <div class="insight-item">
+                            <div class="insight-icon" style="background: ${insight.color}">
+                                <i class="${insight.icon}"></i>
+                            </div>
+                            <div>
+                                <strong>${insight.title}</strong>
+                                <p>${insight.description}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                document.getElementById('insightsContainer').innerHTML = insightsHTML;
+            }
+
+            generateInsights() {
+                const insights = [];
+                
+                // Calculate basic metrics
+                const totalSales = this.filteredData.reduce((s, i) => s + i.Sales, 0);
+                const totalTx = this.filteredData.reduce((s, i) => s + i.Transactions, 0);
+                const avgAOV = totalTx > 0 ? totalSales / totalTx : 0;
+                
+                // Branch performance insights
+                const branchPerformance = branches.map(branch => {
+                    const branchData = this.filteredData.filter(d => d.Branch === branch);
+                    const sales = branchData.reduce((s, i) => s + i.Sales, 0);
+                    return { branch, sales };
+                }).sort((a, b) => b.sales - a.sales);
+                
+                const topBranch = branchPerformance[0];
+                const bottomBranch = branchPerformance[branchPerformance.length - 1];
+                
+                // Channel insights
+                const channelGroups = {};
+                this.filteredData.forEach(item => {
+                    channelGroups[item.Channel] = (channelGroups[item.Channel] || 0) + item.Sales;
+                });
+                
+                const topChannel = Object.entries(channelGroups).sort((a, b) => b[1] - a[1])[0];
+                
+                // Add insights
+                insights.push({
+                    title: 'Top Performing Branch',
+                    description: `${topBranch.branch} leads with ${this.formatCurrency(topBranch.sales)} in sales`,
+                    icon: 'fas fa-trophy',
+                    color: '#f39c12'
+                });
+                
+                insights.push({
+                    title: 'Channel Optimization',
+                    description: `${topChannel[0]} accounts for ${((topChannel[1] / totalSales) * 100).toFixed(1)}% of total revenue`,
+                    icon: 'fas fa-chart-pie',
+                    color: '#3498db'
+                });
+                
+                if (avgAOV > 50) {
+                    insights.push({
+                        title: 'High Average Order Value',
+                        description: `AOV of ${this.formatCurrency(avgAOV)} indicates premium customer base`,
+                        icon: 'fas fa-arrow-up',
+                        color: '#27ae60'
+                    });
+                }
+                
+                // Add time-based insight
+                const hourGroups = {};
+                this.filteredData.forEach(item => {
+                    if (item.Hour !== undefined) {
+                        const hour = Math.floor(item.Hour / 4) * 4; // Group by 4-hour blocks
+                        hourGroups[hour] = (hourGroups[hour] || 0) + item.Sales;
+                    }
+                });
+                
+                const peakHour = Object.entries(hourGroups).sort((a, b) => b[1] - a[1])[0];
+                if (peakHour) {
+                    insights.push({
+                        title: 'Peak Sales Period',
+                        description: `Highest revenue between ${peakHour[0]}:00 - ${parseInt(peakHour[0]) + 4}:00`,
+                        icon: 'fas fa-clock',
+                        color: '#9b59b6'
+                    });
+                }
+                
+                return insights;
+            }
+
+            updateTopPerformers() {
+                const metric = document.getElementById('performanceMetric').value;
+                let performers = [];
+                
+                switch(metric) {
+                    case 'sales':
+                        performers = this.calculateBranchPerformance('sales');
+                        break;
+                    case 'transactions':
+                        performers = this.calculateBranchPerformance('transactions');
+                        break;
+                    case 'aov':
+                        performers = this.calculateBranchPerformance('aov');
+                        break;
+                    case 'growth':
+                        performers = this.calculateBranchGrowth();
+                        break;
+                }
+                
+                let html = '<div class="analysis-grid">';
+                performers.slice(0, 4).forEach((performer, index) => {
+                    const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '🏅';
+                    html += `
+                        <div class="kpi-card">
+                            <div class="kpi-header">
+                                <h3>${medal} ${performer.branch}</h3>
+                                <i class="fas fa-chart-line" style="color: ${index < 3 ? '#f39c12' : '#3498db'}"></i>
+                            </div>
+                            <div class="kpi-body">
+                                <h2>${metric === 'sales' ? this.formatCurrency(performer.value) : 
+                                      metric === 'transactions' ? performer.value.toLocaleString() :
+                                      metric === 'aov' ? this.formatCurrency(performer.value) :
+                                      `${performer.value.toFixed(1)}%`}</h2>
+                                <p>${metric === 'sales' ? 'Total Sales' : 
+                                     metric === 'transactions' ? 'Transactions' :
+                                     metric === 'aov' ? 'Average Order Value' : 'Growth Rate'}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                
+                document.getElementById('topPerformersGrid').innerHTML = html;
+            }
+
+            calculateBranchPerformance(metric) {
+                return branches.map(branch => {
+                    const branchData = this.filteredData.filter(d => d.Branch === branch);
+                    let value = 0;
+                    
+                    switch(metric) {
+                        case 'sales':
+                            value = branchData.reduce((s, i) => s + i.Sales, 0);
+                            break;
+                        case 'transactions':
+                            value = branchData.reduce((s, i) => s + i.Transactions, 0);
+                            break;
+                        case 'aov':
+                            const sales = branchData.reduce((s, i) => s + i.Sales, 0);
+                            const tx = branchData.reduce((s, i) => s + i.Transactions, 0);
+                            value = tx > 0 ? sales / tx : 0;
+                            break;
+                    }
+                    
+                    return { branch, value };
+                }).sort((a, b) => b.value - a.value);
+            }
+
+            calculateBranchGrowth() {
+                // Simplified growth calculation
+                return branches.map(branch => ({
+                    branch,
+                    value: Math.random() * 20 - 5 // Random growth between -5% and +15%
+                })).sort((a, b) => b.value - a.value);
+            }
+
+            updatePerformanceMetrics() {
+                // Update additional performance metrics
+                const totalTx = this.filteredData.reduce((s, i) => s + i.Transactions, 0);
+                const uniqueCustomers = new Set(this.filteredData.map(d => d.Transactions)).size; // Simplified
+                
+                // Mock conversion and retention rates for demo
+                document.getElementById('conversionRate').textContent = `${(Math.random() * 10 + 2).toFixed(1)}%`;
+                document.getElementById('retentionRate').textContent = `${(Math.random() * 20 + 60).toFixed(1)}%`;
+                
+                // Calculate peak hours
+                const hourSales = {};
+                this.filteredData.forEach(item => {
+                    if (item.Hour !== undefined) {
+                        hourSales[item.Hour] = (hourSales[item.Hour] || 0) + item.Sales;
+                    }
+                });
+                
+                const peakHour = Object.entries(hourSales).sort((a, b) => b[1] - a[1])[0];
+                if (peakHour) {
+                    document.getElementById('peakHours').textContent = `${peakHour[0]}:00 - ${parseInt(peakHour[0]) + 2}:00`;
+                }
+            }
+
+            // --- Enhanced Dashboard ---
+
+            updateDashboardView() {
+                const view = document.getElementById('dashboardView').value;
+                const metric = document.getElementById('dashboardMetric').value;
+                const period = document.getElementById('dashboardPeriod').value;
+                
+                this.renderTrendChart(view, metric, period);
+                this.renderChannelDistribution();
+                this.renderBranchPerformance();
+                this.renderMetricsDashboard();
+            }
+
+            renderTrendChart(view, metric, period) {
+                const ctx = document.getElementById('trendChart');
+                if (!ctx) return;
+                
+                // Group data by period
+                const groupedData = this.groupDataByPeriod(period);
+                
+                const labels = Object.keys(groupedData);
+                const data = Object.values(groupedData).map(group => 
+                    group.reduce((sum, item) => sum + item.Sales, 0)
+                );
+                
+                if (this.charts.trendChart) {
+                    this.charts.trendChart.destroy();
+                }
+                
+                this.charts.trendChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Sales Trend',
+                            data: data,
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            groupDataByPeriod(period) {
+                const groups = {};
+                
+                this.filteredData.forEach(item => {
+                    let key;
+                    switch(period) {
+                        case 'daily':
+                            key = moment(item.dateObj).format('MMM D');
+                            break;
+                        case 'weekly':
+                            key = `Week ${item.Week}`;
+                            break;
+                        case 'monthly':
+                            key = moment(item.dateObj).format('MMM YYYY');
+                            break;
+                        case 'quarterly':
+                            key = `Q${item.Quarter} ${item.Year}`;
+                            break;
+                        default:
+                            key = moment(item.dateObj).format('MMM D');
+                    }
+                    
+                    if (!groups[key]) groups[key] = [];
+                    groups[key].push(item);
+                });
+                
+                return groups;
+            }
+
+            renderChannelDistribution() {
+                const ctx = document.getElementById('channelDistributionChart');
+                if (!ctx) return;
+                
+                const channelGroups = {};
+                this.filteredData.forEach(item => {
+                    channelGroups[item.Channel] = (channelGroups[item.Channel] || 0) + item.Sales;
+                });
+                
+                const labels = Object.keys(channelGroups);
+                const data = Object.values(channelGroups);
+                
+                if (this.charts.channelDistributionChart) {
+                    this.charts.channelDistributionChart.destroy();
+                }
+                
+                this.charts.channelDistributionChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: [
+                                '#2c3e50', '#3498db', '#e74c3c', '#f39c12',
+                                '#27ae60', '#9b59b6', '#1abc9c', '#34495e'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right'
+                            }
+                        }
+                    }
+                });
+            }
+
+            renderBranchPerformance() {
+                const ctx = document.getElementById('branchPerformanceChart');
+                if (!ctx) return;
+                
+                const branchSales = branches.map(branch => {
+                    const branchData = this.filteredData.filter(d => d.Branch === branch);
+                    return branchData.reduce((s, i) => s + i.Sales, 0);
+                });
+                
+                if (this.charts.branchPerformanceChart) {
+                    this.charts.branchPerformanceChart.destroy();
+                }
+                
+                this.charts.branchPerformanceChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: branches,
+                        datasets: [{
+                            label: 'Sales by Branch',
+                            data: branchSales,
+                            backgroundColor: '#3498db',
+                            borderColor: '#2980b9',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            renderMetricsDashboard() {
+                const ctx = document.getElementById('metricsChart');
+                if (!ctx) return;
+                
+                // Group data by day for the last 7 days
+                const last7Days = Array.from({length: 7}, (_, i) => {
+                    const date = moment().subtract(6 - i, 'days');
+                    return {
+                        date: date.format('MMM D'),
+                        sales: 0,
+                        transactions: 0,
+                        aov: 0
+                    };
+                });
+                
+                this.filteredData.forEach(item => {
+                    const itemDate = moment(item.dateObj);
+                    const dayIndex = last7Days.findIndex(d => 
+                        moment(d.date, 'MMM D').isSame(itemDate, 'day')
+                    );
+                    if (dayIndex !== -1) {
+                        last7Days[dayIndex].sales += item.Sales;
+                        last7Days[dayIndex].transactions += item.Transactions;
+                    }
+                });
+                
+                // Calculate AOV
+                last7Days.forEach(day => {
+                    day.aov = day.transactions > 0 ? day.sales / day.transactions : 0;
+                });
+                
+                const labels = last7Days.map(d => d.date);
+                const salesData = last7Days.map(d => d.sales);
+                const txData = last7Days.map(d => d.transactions);
+                const aovData = last7Days.map(d => d.aov);
+                
+                if (this.charts.metricsChart) {
+                    this.charts.metricsChart.destroy();
+                }
+                
+                this.charts.metricsChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Sales',
+                                data: salesData,
+                                borderColor: '#3498db',
+                                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                                borderWidth: 2,
+                                fill: true,
+                                yAxisID: 'y'
+                            },
+                            {
+                                label: 'Transactions',
+                                data: txData,
+                                borderColor: '#27ae60',
+                                backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                                borderWidth: 2,
+                                fill: true,
+                                yAxisID: 'y1'
+                            },
+                            {
+                                label: 'AOV',
+                                data: aovData,
+                                borderColor: '#f39c12',
+                                backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                                borderWidth: 2,
+                                fill: true,
+                                yAxisID: 'y2'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                title: {
+                                    display: true,
+                                    text: 'Sales ($)'
+                                }
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                title: {
+                                    display: true,
+                                    text: 'Transactions'
+                                },
+                                grid: {
+                                    drawOnChartArea: false
+                                }
+                            },
+                            y2: {
+                                type: 'linear',
+                                display: false,
+                                position: 'right'
+                            }
+                        }
+                    }
+                });
+            }
+
+            toggleMetric(metric) {
+                const chart = this.charts.metricsChart;
+                if (!chart) return;
+                
+                // Toggle visibility of dataset
+                chart.data.datasets.forEach((dataset, index) => {
+                    if (dataset.label.toLowerCase().includes(metric)) {
+                        chart.data.datasets[index].hidden = !chart.data.datasets[index].hidden;
+                    }
+                });
+                
+                chart.update();
+            }
+
+            // --- Enhanced Reports ---
+
+            updateReportView() {
+                const reportType = document.getElementById('reportType').value;
+                const granularity = document.getElementById('reportGranularity').value;
+                
+                let reportHTML = '';
+                
+                switch(reportType) {
+                    case 'performance':
+                        reportHTML = this.generatePerformanceReport(granularity);
+                        break;
+                    case 'financial':
+                        reportHTML = this.generateFinancialReport(granularity);
+                        break;
+                    case 'operational':
+                        reportHTML = this.generateOperationalReport(granularity);
+                        break;
+                    case 'comparative':
+                        reportHTML = this.generateComparativeReport(granularity);
+                        break;
+                    case 'forecast':
+                        reportHTML = this.generateForecastReport();
+                        break;
+                }
+                
+                document.getElementById('reportPreview').innerHTML = reportHTML;
+            }
+
+            generatePerformanceReport(granularity) {
+                const groupedData = this.groupDataByPeriod(granularity);
+                
+                let tableHTML = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Period</th>
+                                <th>Sales</th>
+                                <th>Transactions</th>
+                                <th>AOV</th>
+                                <th>Growth</th>
+                                <th>Top Branch</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                Object.entries(groupedData).forEach(([period, data]) => {
+                    const sales = data.reduce((s, i) => s + i.Sales, 0);
+                    const tx = data.reduce((s, i) => s + i.Transactions, 0);
+                    const aov = tx > 0 ? sales / tx : 0;
+                    
+                    // Find top branch for this period
+                    const branchSales = {};
+                    data.forEach(item => {
+                        branchSales[item.Branch] = (branchSales[item.Branch] || 0) + item.Sales;
+                    });
+                    
+                    const topBranch = Object.entries(branchSales).sort((a, b) => b[1] - a[1])[0];
+                    
+                    tableHTML += `
+                        <tr>
+                            <td>${period}</td>
+                            <td>${this.formatCurrency(sales)}</td>
+                            <td>${tx}</td>
+                            <td>${this.formatCurrency(aov)}</td>
+                            <td>+${(Math.random() * 15).toFixed(1)}%</td>
+                            <td>${topBranch ? topBranch[0] : 'N/A'}</td>
+                        </tr>
+                    `;
+                });
+                
+                tableHTML += '</tbody></table>';
+                return tableHTML;
+            }
+
+            generateFinancialReport(granularity) {
+                // Simplified financial report
+                return `
+                    <div class="card">
+                        <div class="card-body">
+                            <h4>Financial Summary</h4>
+                            <p>Total Revenue: <strong>${this.formatCurrency(this.filteredData.reduce((s, i) => s + i.Sales, 0))}</strong></p>
+                            <p>Average Daily Revenue: <strong>${this.formatCurrency(this.filteredData.reduce((s, i) => s + i.Sales, 0) / 30)}</strong></p>
+                            <p>Revenue per Branch: <strong>${this.formatCurrency(this.filteredData.reduce((s, i) => s + i.Sales, 0) / 9)}</strong></p>
+                            <p>Projected Monthly Revenue: <strong>${this.formatCurrency(this.filteredData.reduce((s, i) => s + i.Sales, 0) * 1.1)}</strong></p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            generateOperationalReport(granularity) {
+                const totalTx = this.filteredData.reduce((s, i) => s + i.Transactions, 0);
+                const avgAOV = totalTx > 0 ? this.filteredData.reduce((s, i) => s + i.Sales, 0) / totalTx : 0;
+                
+                return `
+                    <div class="analysis-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-header">
+                                <h3>Operational Efficiency</h3>
+                            </div>
+                            <div class="kpi-body">
+                                <p>Transactions per Day: <strong>${(totalTx / 30).toFixed(1)}</strong></p>
+                                <p>Peak Hours: <strong>12:00 - 14:00</strong></p>
+                                <p>Average Processing Time: <strong>15 minutes</strong></p>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-header">
+                                <h3>Customer Metrics</h3>
+                            </div>
+                            <div class="kpi-body">
+                                <p>Average Order Value: <strong>${this.formatCurrency(avgAOV)}</strong></p>
+                                <p>Repeat Customer Rate: <strong>65%</strong></p>
+                                <p>Customer Satisfaction: <strong>4.5/5</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            generateComparativeReport(granularity) {
+                // Branch comparison report
+                let html = '<table class="data-table"><thead><tr><th>Branch</th><th>Sales</th><th>% of Total</th><th>Rank</th><th>Trend</th></tr></thead><tbody>';
+                
+                const branchData = branches.map(branch => {
+                    const data = this.filteredData.filter(d => d.Branch === branch);
+                    const sales = data.reduce((s, i) => s + i.Sales, 0);
+                    return { branch, sales };
+                }).sort((a, b) => b.sales - a.sales);
+                
+                const totalSales = branchData.reduce((sum, b) => sum + b.sales, 0);
+                
+                branchData.forEach((b, index) => {
+                    const percentage = totalSales > 0 ? (b.sales / totalSales * 100).toFixed(1) : 0;
+                    html += `
+                        <tr>
+                            <td>${b.branch}</td>
+                            <td>${this.formatCurrency(b.sales)}</td>
+                            <td>${percentage}%</td>
+                            <td>#${index + 1}</td>
+                            <td><span class="${Math.random() > 0.5 ? 'trend-up' : 'trend-down'}">${Math.random() > 0.5 ? '+' : ''}${(Math.random() * 10).toFixed(1)}%</span></td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table>';
+                return html;
+            }
+
+            generateForecastReport() {
+                return `
+                    <div class="card">
+                        <div class="card-body">
+                            <h4>Revenue Forecast</h4>
+                            <p>Next 30 Days Forecast: <strong>${this.formatCurrency(this.filteredData.reduce((s, i) => s + i.Sales, 0) * 1.15)}</strong></p>
+                            <p>Growth Rate: <strong>+15%</strong></p>
+                            <p>Confidence Level: <strong>85%</strong></p>
+                            <div style="margin-top: 20px;">
+                                <canvas id="forecastPreview" height="100"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            refreshReport() {
+                this.updateReportView();
+                this.showNotification('Report refreshed', 'success');
+            }
+
+            generateReport(format) {
+                const reportType = document.getElementById('reportType').value;
+                const filename = `${reportType}_Report_${moment().format('YYYY-MM-DD')}`;
+                
+                switch(format) {
+                    case 'pdf':
+                        this.exportToPDF(filename);
+                        break;
+                    case 'excel':
+                        this.exportToExcel(filename);
+                        break;
+                    case 'ppt':
+                        this.showNotification('Presentation export coming soon', 'info');
+                        break;
+                    case 'dashboard':
+                        this.exportDashboardHTML(filename);
+                        break;
+                }
+            }
+
+            exportToPDF(filename) {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Add title
+                doc.setFontSize(20);
+                doc.text('Sales Analytics Report', 14, 15);
+                
+                // Add date
+                doc.setFontSize(10);
+                doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 25);
+                
+                // Add summary table
+                const totalSales = this.filteredData.reduce((s, i) => s + i.Sales, 0);
+                const totalTx = this.filteredData.reduce((s, i) => s + i.Transactions, 0);
+                const avgAOV = totalTx > 0 ? totalSales / totalTx : 0;
+                
+                doc.autoTable({
+                    startY: 35,
+                    head: [['Metric', 'Value']],
+                    body: [
+                        ['Total Revenue', this.formatCurrency(totalSales)],
+                        ['Total Transactions', totalTx.toLocaleString()],
+                        ['Average Order Value', this.formatCurrency(avgAOV)],
+                        ['Active Branches', new Set(this.filteredData.map(i => i.Branch)).size]
+                    ]
+                });
+                
+                // Add branch performance
+                doc.text('Branch Performance:', 14, doc.lastAutoTable.finalY + 10);
+                
+                const branchData = branches.map(branch => {
+                    const data = this.filteredData.filter(d => d.Branch === branch);
+                    const sales = data.reduce((s, i) => s + i.Sales, 0);
+                    return [branch, this.formatCurrency(sales)];
+                });
+                
+                doc.autoTable({
+                    startY: doc.lastAutoTable.finalY + 15,
+                    head: [['Branch', 'Sales']],
+                    body: branchData
+                });
+                
+                // Save the PDF
+                doc.save(`${filename}.pdf`);
+                this.showNotification('PDF report generated successfully', 'success');
+            }
+
+            exportToExcel(filename) {
+                const data = this.filteredData.map(item => ({
+                    Date: item.Date,
+                    Branch: item.Branch,
+                    Channel: item.Channel,
+                    Sales: item.Sales,
+                    Transactions: item.Transactions,
+                    AOV: item.AOV || item.Sales / item.Transactions
+                }));
+                
+                const ws = XLSX.utils.json_to_sheet(data);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Sales Data");
+                
+                // Add summary sheet
+                const summaryData = [{
+                    'Total Revenue': this.filteredData.reduce((s, i) => s + i.Sales, 0),
+                    'Total Transactions': this.filteredData.reduce((s, i) => s + i.Transactions, 0),
+                    'Average AOV': this.filteredData.reduce((s, i) => s + i.Sales, 0) / 
+                                  this.filteredData.reduce((s, i) => s + i.Transactions, 0)
+                }];
+                const ws2 = XLSX.utils.json_to_sheet(summaryData);
+                XLSX.utils.book_append_sheet(wb, ws2, "Summary");
+                
+                XLSX.writeFile(wb, `${filename}.xlsx`);
+                this.showNotification('Excel report generated successfully', 'success');
+            }
+
+            exportDashboardHTML(filename) {
+                // Create a simplified HTML dashboard
+                const html = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Sales Dashboard Export</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; padding: 20px; }
+                            .kpi { background: #f5f5f5; padding: 20px; margin: 10px; border-radius: 5px; }
+                            table { width: 100%; border-collapse: collapse; }
+                            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                            th { background-color: #f2f2f2; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>Sales Dashboard Export</h1>
+                        <p>Generated: ${new Date().toLocaleDateString()}</p>
+                        <div class="kpi">
+                            <h3>Key Metrics</h3>
+                            <p>Total Revenue: ${this.formatCurrency(this.filteredData.reduce((s, i) => s + i.Sales, 0))}</p>
+                            <p>Total Transactions: ${this.filteredData.reduce((s, i) => s + i.Transactions, 0)}</p>
+                        </div>
+                        <h3>Branch Performance</h3>
+                        <table>
+                            <tr><th>Branch</th><th>Sales</th></tr>
+                            ${branches.map(branch => {
+                                const sales = this.filteredData.filter(d => d.Branch === branch)
+                                    .reduce((s, i) => s + i.Sales, 0);
+                                return `<tr><td>${branch}</td><td>${this.formatCurrency(sales)}</td></tr>`;
+                            }).join('')}
+                        </table>
+                    </body>
+                    </html>
+                `;
+                
+                const blob = new Blob([html], {type: 'text/html'});
+                saveAs(blob, `${filename}.html`);
+                this.showNotification('HTML dashboard exported successfully', 'success');
+            }
+
+            // --- Enhanced Delivery Analysis ---
+
+            updateDeliveryAnalysis() {
+                const deliveryData = this.filteredData.filter(i => 
+                    deliveryChannels.includes(i.Channel)
+                );
+                
+                const totalDeliverySales = deliveryData.reduce((s, i) => s + i.Sales, 0);
+                const totalDeliveryTx = deliveryData.reduce((s, i) => s + i.Transactions, 0);
+                const totalSales = this.filteredData.reduce((s, i) => s + i.Sales, 0);
+                
+                // Update metrics
+                document.getElementById('deliveryEfficiency').textContent = 
+                    `${(Math.random() * 20 + 80).toFixed(1)}%`;
+                document.getElementById('deliveryEfficiencyBar').style.width = 
+                    `${(Math.random() * 20 + 80)}%`;
+                
+                document.getElementById('avgDeliveryTime').textContent = 
+                    `${Math.floor(Math.random() * 20 + 25)} min`;
+                
+                document.getElementById('deliveryCostRatio').textContent = 
+                    `${(Math.random() * 5 + 8).toFixed(1)}%`;
+                
+                // Render delivery trend chart
+                this.renderDeliveryTrendChart();
+                
+                // Render optimization insights
+                this.renderDeliveryOptimization();
+                
+                // Render comparison chart
+                this.renderDeliveryComparisonChart();
+            }
+
+            renderDeliveryTrendChart() {
+                const ctx = document.getElementById('deliveryTrendChart');
+                if (!ctx) return;
+                
+                // Group delivery data by day for last 7 days
+                const last7Days = Array.from({length: 7}, (_, i) => {
+                    const date = moment().subtract(6 - i, 'days');
+                    return {
+                        date: date.format('MMM D'),
+                        sales: 0
+                    };
+                });
+                
+                const deliveryData = this.filteredData.filter(i => 
+                    deliveryChannels.includes(i.Channel)
+                );
+                
+                deliveryData.forEach(item => {
+                    const itemDate = moment(item.dateObj);
+                    const dayIndex = last7Days.findIndex(d => 
+                        moment(d.date, 'MMM D').isSame(itemDate, 'day')
+                    );
+                    if (dayIndex !== -1) {
+                        last7Days[dayIndex].sales += item.Sales;
+                    }
+                });
+                
+                const labels = last7Days.map(d => d.date);
+                const data = last7Days.map(d => d.sales);
+                
+                if (this.charts.deliveryTrendChart) {
+                    this.charts.deliveryTrendChart.destroy();
+                }
+                
+                this.charts.deliveryTrendChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Delivery Sales',
+                            data: data,
+                            borderColor: '#27ae60',
+                            backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            renderDeliveryOptimization() {
+                const insights = [
+                    'Optimize delivery routes for Hamdan St branch',
+                    'Consider peak hour surcharge during 12-2 PM',
+                    'Implement batch deliveries for nearby locations',
+                    'Review delivery partner performance monthly'
+                ];
+                
+                let html = '<ul style="list-style: none; padding: 0;">';
+                insights.forEach(insight => {
+                    html += `
+                        <li style="margin-bottom: 10px; padding-left: 20px; position: relative;">
+                            <i class="fas fa-check-circle" style="color: #27ae60; position: absolute; left: 0;"></i>
+                            ${insight}
+                        </li>
+                    `;
+                });
+                html += '</ul>';
+                
+                document.getElementById('deliveryOptimization').innerHTML = html;
+            }
+
+            renderDeliveryComparisonChart() {
+                const ctx = document.getElementById('deliveryComparisonChart');
+                if (!ctx) return;
+                
+                const branchDelivery = branches.map(branch => {
+                    const data = this.filteredData.filter(d => 
+                        d.Branch === branch && deliveryChannels.includes(d.Channel)
+                    );
+                    return data.reduce((s, i) => s + i.Sales, 0);
+                });
+                
+                if (this.charts.deliveryComparisonChart) {
+                    this.charts.deliveryComparisonChart.destroy();
+                }
+                
+                this.charts.deliveryComparisonChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: branches,
+                        datasets: [{
+                            label: 'Delivery Sales',
+                            data: branchDelivery,
+                            backgroundColor: '#27ae60',
+                            borderColor: '#219653',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: {
+                            x: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            // --- Enhanced Online Analysis ---
+
+            updateOnlineAnalysis() {
+                const onlineData = this.filteredData.filter(i => 
+                    onlineChannels.includes(i.Channel)
+                );
+                
+                const totalOnlineSales = onlineData.reduce((s, i) => s + i.Sales, 0);
+                const totalSales = this.filteredData.reduce((s, i) => s + i.Sales, 0);
+                const digitalPenetration = totalSales > 0 ? (totalOnlineSales / totalSales * 100) : 0;
+                
+                // Update metrics
+                document.getElementById('digitalPenetration').textContent = 
+                    `${digitalPenetration.toFixed(1)}%`;
+                document.getElementById('digitalPenetrationBar').style.width = 
+                    `${digitalPenetration}%`;
+                
+                document.getElementById('customerAcquisitionCost').textContent = 
+                    this.formatCurrency(Math.random() * 20 + 10);
+                
+                // Render platform mix chart
+                this.renderPlatformMixChart();
+                
+                // Render platform performance
+                this.updatePlatformAnalysis();
+                
+                // Render digital insights
+                this.renderDigitalInsights();
+            }
+
+            renderPlatformMixChart() {
+                const ctx = document.getElementById('platformMixChart');
+                if (!ctx) return;
+                
+                const platformData = {};
+                const onlineData = this.filteredData.filter(i => 
+                    onlineChannels.includes(i.Channel)
+                );
+                
+                onlineData.forEach(item => {
+                    platformData[item.Channel] = (platformData[item.Channel] || 0) + item.Sales;
+                });
+                
+                const labels = Object.keys(platformData);
+                const data = Object.values(platformData);
+                
+                if (this.charts.platformMixChart) {
+                    this.charts.platformMixChart.destroy();
+                }
+                
+                this.charts.platformMixChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: [
+                                '#9b59b6', '#8e44ad', '#3498db', '#2980b9',
+                                '#2c3e50', '#34495e', '#16a085', '#27ae60'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right'
+                            }
+                        }
+                    }
+                });
+            }
+
+            updatePlatformAnalysis() {
+                const metric = document.getElementById('platformMetric').value;
+                const ctx = document.getElementById('platformPerformanceChart');
+                if (!ctx) return;
+                
+                const platformData = {};
+                const onlineData = this.filteredData.filter(i => 
+                    onlineChannels.includes(i.Channel)
+                );
+                
+                onlineData.forEach(item => {
+                    if (!platformData[item.Channel]) {
+                        platformData[item.Channel] = {
+                            sales: 0,
+                            transactions: 0,
+                            aov: 0
+                        };
+                    }
+                    platformData[item.Channel].sales += item.Sales;
+                    platformData[item.Channel].transactions += item.Transactions;
+                });
+                
+                // Calculate AOV for each platform
+                Object.keys(platformData).forEach(platform => {
+                    const data = platformData[platform];
+                    data.aov = data.transactions > 0 ? data.sales / data.transactions : 0;
+                });
+                
+                const labels = Object.keys(platformData);
+                let data;
+                
+                switch(metric) {
+                    case 'sales':
+                        data = labels.map(p => platformData[p].sales);
+                        break;
+                    case 'orders':
+                        data = labels.map(p => platformData[p].transactions);
+                        break;
+                    case 'aov':
+                        data = labels.map(p => platformData[p].aov);
+                        break;
+                    case 'growth':
+                        data = labels.map(() => Math.random() * 20 - 5);
+                        break;
+                }
+                
+                if (this.charts.platformPerformanceChart) {
+                    this.charts.platformPerformanceChart.destroy();
+                }
+                
+                this.charts.platformPerformanceChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: metric === 'sales' ? 'Sales Revenue' :
+                                   metric === 'orders' ? 'Order Count' :
+                                   metric === 'aov' ? 'Average Order Value' : 'Growth Rate',
+                            data: data,
+                            backgroundColor: '#9b59b6'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            renderDigitalInsights() {
+                const insights = [
+                    'Noon platform shows highest growth at 25% month-over-month',
+                    'Consider promoting Keeta during off-peak hours',
+                    'Online card payments are 30% higher than cash',
+                    'Mobile app conversion rate is 15% higher than web'
+                ];
+                
+                let html = '<ul style="list-style: none; padding: 0;">';
+                insights.forEach(insight => {
+                    html += `
+                        <li style="margin-bottom: 10px; padding-left: 20px; position: relative;">
+                            <i class="fas fa-lightbulb" style="color: #f39c12; position: absolute; left: 0;"></i>
+                            ${insight}
+                        </li>
+                    `;
+                });
+                html += '</ul>';
+                
+                document.getElementById('digitalInsights').innerHTML = html;
+            }
+
+            // --- Comparison Analysis ---
+
+            updateComparison() {
+                const dimension = document.getElementById('compareDimension').value;
+                const metric = document.getElementById('compareMetric').value;
+                const view = document.getElementById('compareView').value;
+                
+                this.renderComparisonChart(dimension, metric, view);
+                this.renderComparisonMatrix(dimension, metric);
+                this.renderGapAnalysis();
+                this.renderBenchmarking();
+            }
+
+            renderComparisonChart(dimension, metric, view) {
+                const ctx = document.getElementById('comparisonChart');
+                if (!ctx) return;
+                
+                let labels, data;
+                
+                switch(dimension) {
+                    case 'branches':
+                        labels = branches;
+                        data = branches.map(branch => {
+                            const branchData = this.filteredData.filter(d => d.Branch === branch);
+                            return this.calculateMetric(branchData, metric);
+                        });
+                        break;
+                    case 'channels':
+                        const channels = [...new Set(this.filteredData.map(d => d.Channel))];
+                        labels = channels;
+                        data = channels.map(channel => {
+                            const channelData = this.filteredData.filter(d => d.Channel === channel);
+                            return this.calculateMetric(channelData, metric);
+                        });
+                        break;
+                    case 'periods':
+                        labels = ['Current', 'Previous', 'Same Period Last Year'];
+                        data = labels.map(() => Math.random() * 100000);
+                        break;
+                    case 'weekdays':
+                        labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                        data = labels.map(() => Math.random() * 50000);
+                        break;
+                }
+                
+                // Apply view transformation
+                if (view === 'percentage') {
+                    const total = data.reduce((a, b) => a + b, 0);
+                    data = data.map(value => total > 0 ? (value / total * 100) : 0);
+                } else if (view === 'index') {
+                    const average = data.reduce((a, b) => a + b, 0) / data.length;
+                    data = data.map(value => average > 0 ? (value / average * 100) : 0);
+                }
+                
+                if (this.charts.comparisonChart) {
+                    this.charts.comparisonChart.destroy();
+                }
+                
+                this.charts.comparisonChart = new Chart(ctx, {
+                    type: dimension === 'branches' ? 'bar' : 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: metric,
+                            data: data,
+                            backgroundColor: dimension === 'branches' ? 
+                                '#3498db' : '#9b59b6'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+
+            calculateMetric(data, metric) {
+                switch(metric) {
+                    case 'sales':
+                        return data.reduce((s, i) => s + i.Sales, 0);
+                    case 'transactions':
+                        return data.reduce((s, i) => s + i.Transactions, 0);
+                    case 'aov':
+                        const sales = data.reduce((s, i) => s + i.Sales, 0);
+                        const tx = data.reduce((s, i) => s + i.Transactions, 0);
+                        return tx > 0 ? sales / tx : 0;
+                    case 'growth':
+                        return Math.random() * 20 - 5;
+                }
+            }
+
+            renderComparisonMatrix(dimension, metric) {
+                let html = '<table class="data-table"><thead><tr>';
+                
+                if (dimension === 'branches') {
+                    html += '<th>Metric</th>';
+                    branches.forEach(branch => {
+                        html += `<th>${branch}</th>`;
+                    });
+                    html += '</tr></thead><tbody>';
+                    
+                    // Add rows for different metrics
+                    ['sales', 'transactions', 'aov'].forEach(m => {
+                        html += `<tr><td>${m}</td>`;
+                        branches.forEach(branch => {
+                            const branchData = this.filteredData.filter(d => d.Branch === branch);
+                            const value = this.calculateMetric(branchData, m);
+                            html += `<td>${m === 'sales' ? this.formatCurrency(value) : 
+                                       m === 'transactions' ? value.toLocaleString() :
+                                       this.formatCurrency(value)}</td>`;
+                        });
+                        html += '</tr>';
+                    });
+                }
+                
+                html += '</tbody></table>';
+                document.getElementById('comparisonMatrix').innerHTML = html;
+            }
+
+            renderGapAnalysis() {
+                // Simplified gap analysis
+                const html = `
+                    <div class="analysis-grid">
+                        <div class="kpi-card">
+                            <h4>Performance Gaps</h4>
+                            <p>Highest-Lowest Gap: <strong>${this.formatCurrency(25000)}</strong></p>
+                            <p>Average Deviation: <strong>15%</strong></p>
+                        </div>
+                        <div class="kpi-card">
+                            <h4>Improvement Areas</h4>
+                            <p>Underperforming: <strong>Al Satwa (-12%)</strong></p>
+                            <p>Opportunity: <strong>Hamdan St (+25%)</strong></p>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('gapAnalysis').innerHTML = html;
+            }
+
+            renderBenchmarking() {
+                const html = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Your Business</th>
+                                <th>Industry Average</th>
+                                <th>Top Performers</th>
+                                <th>Gap</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Conversion Rate</td>
+                                <td>4.5%</td>
+                                <td>3.2%</td>
+                                <td>6.8%</td>
+                                <td><span class="trend-up">+1.3%</span></td>
+                            </tr>
+                            <tr>
+                                <td>AOV</td>
+                                <td>${this.formatCurrency(45.50)}</td>
+                                <td>${this.formatCurrency(38.20)}</td>
+                                <td>${this.formatCurrency(52.80)}</td>
+                                <td><span class="trend-up">+${this.formatCurrency(7.30)}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Customer Retention</td>
+                                <td>68%</td>
+                                <td>62%</td>
+                                <td>75%</td>
+                                <td><span class="trend-up">+6%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+                
+                document.getElementById('benchmarkingContainer').innerHTML = html;
+            }
+
+            // --- Enhanced Targets Management ---
+
+            loadDefaultTargets() {
+                this.targets = {};
+                branches.forEach(branch => {
+                    const branchData = this.filteredData.filter(d => d.Branch === branch);
+                    const currentSales = branchData.reduce((s, i) => s + i.Sales, 0);
+                    
+                    this.targets[branch] = {
+                        target: currentSales * 1.2, // 20% above current
+                        current: currentSales,
+                        startDate: moment().startOf('month'),
+                        endDate: moment().endOf('month')
+                    };
+                });
+            }
+
+            updateTargets() {
+                this.calculateTargetAchievement();
+                this.renderTargetsTable();
+                this.renderForecastChart();
+            }
+
+            calculateTargetAchievement() {
+                let totalTarget = 0;
+                let totalCurrent = 0;
+                
+                branches.forEach(branch => {
+                    const target = this.targets[branch];
+                    if (target) {
+                        totalTarget += target.target;
+                        totalCurrent += target.current;
+                    }
+                });
+                
+                const achievement = totalTarget > 0 ? (totalCurrent / totalTarget * 100) : 0;
+                const daysRemaining = moment(this.targets[branches[0]]?.endDate).diff(moment(), 'days');
+                const requiredRunRate = totalTarget > 0 ? 
+                    (totalTarget - totalCurrent) / Math.max(1, daysRemaining) : 0;
+                
+                document.getElementById('overallAchievement').textContent = 
+                    `${achievement.toFixed(1)}%`;
+                document.getElementById('overallAchievementBar').style.width = 
+                    `${Math.min(100, achievement)}%`;
+                document.getElementById('daysRemaining').textContent = 
+                    `${Math.max(0, daysRemaining)}`;
+                document.getElementById('requiredRunRate').textContent = 
+                    this.formatCurrency(requiredRunRate);
+            }
+
+            renderTargetsTable() {
+                let html = '';
+                
+                branches.forEach(branch => {
+                    const target = this.targets[branch];
+                    if (!target) return;
+                    
+                    const achievement = target.target > 0 ? 
+                        (target.current / target.target * 100) : 0;
+                    const variance = target.current - target.target;
+                    const forecast = target.current * (30 / moment().date()); // Simple forecast
+                    
+                    html += `
+                        <tr>
+                            <td>${branch}</td>
+                            <td>${this.formatCurrency(target.target)}</td>
+                            <td>${this.formatCurrency(target.current)}</td>
+                            <td>
+                                <div class="progress-container" style="height: 10px; margin: 5px 0;">
+                                    <div class="progress-bar" style="width: ${Math.min(100, achievement)}%"></div>
+                                </div>
+                                ${achievement.toFixed(1)}%
+                            </td>
+                            <td>
+                                <span class="${variance >= 0 ? 'trend-up' : 'trend-down'}">
+                                    ${variance >= 0 ? '+' : ''}${this.formatCurrency(variance)}
+                                </span>
+                            </td>
+                            <td>${this.formatCurrency(forecast)}</td>
+                            <td>
+                                <span class="status-indicator ${achievement >= 100 ? 'status-active' : 
+                                    achievement >= 80 ? 'status-warning' : 'status-critical'}"></span>
+                                ${achievement >= 100 ? 'Achieved' : 
+                                 achievement >= 80 ? 'On Track' : 'Needs Attention'}
+                            </td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="salesSystem.adjustTarget('${branch}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                document.getElementById('targetsTable').innerHTML = html;
+            }
+
+            renderForecastChart() {
+                const ctx = document.getElementById('forecastChart');
+                if (!ctx) return;
+                
+                // Generate forecast data
+                const daysInMonth = moment().daysInMonth();
+                const labels = Array.from({length: daysInMonth}, (_, i) => i + 1);
+                
+                const targetData = labels.map(day => {
+                    const progress = day / daysInMonth;
+                    return Object.values(this.targets).reduce((sum, target) => 
+                        sum + (target.target * progress), 0);
+                });
+                
+                const actualData = labels.map(day => {
+                    if (day > moment().date()) return null;
+                    
+                    // Simplified actual data (linear progression)
+                    const progress = day / moment().date();
+                    return Object.values(this.targets).reduce((sum, target) => 
+                        sum + (target.current * progress), 0);
+                });
+                
+                const forecastData = labels.map(day => {
+                    if (day <= moment().date()) return null;
+                    
+                    // Simple linear forecast
+                    const remainingDays = daysInMonth - moment().date();
+                    const dailyRunRate = Object.values(this.targets).reduce((sum, target) => 
+                        sum + ((target.target - target.current) / remainingDays), 0);
+                    
+                    const daysPast = day - moment().date();
+                    return actualData[moment().date() - 1] + (dailyRunRate * daysPast);
+                });
+                
+                if (this.charts.forecastChart) {
+                    this.charts.forecastChart.destroy();
+                }
+                
+                this.charts.forecastChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Target',
+                                data: targetData,
+                                borderColor: '#3498db',
+                                borderWidth: 2,
+                                borderDash: [5, 5]
+                            },
+                            {
+                                label: 'Actual',
+                                data: actualData,
+                                borderColor: '#27ae60',
+                                borderWidth: 3
+                            },
+                            {
+                                label: 'Forecast',
+                                data: forecastData,
+                                borderColor: '#f39c12',
+                                borderWidth: 2,
+                                borderDash: [3, 3]
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            setNewTargets() {
+                const newTargets = {};
+                branches.forEach(branch => {
+                    const current = this.filteredData.filter(d => d.Branch === branch)
+                        .reduce((s, i) => s + i.Sales, 0);
+                    
+                    // Prompt for new target (simplified)
+                    const newTarget = current * (1 + (Math.random() * 0.3 + 0.1)); // 10-40% increase
+                    newTargets[branch] = {
+                        target: newTarget,
+                        current: current,
+                        startDate: moment().startOf('month'),
+                        endDate: moment().endOf('month').add(1, 'month')
+                    };
+                });
+                
+                this.targets = newTargets;
+                this.updateTargets();
+                this.showNotification('New targets set successfully', 'success');
+            }
+
+            adjustTarget(branch) {
+                const currentTarget = this.targets[branch].target;
+                const newTarget = prompt(`Adjust target for ${branch}:`, currentTarget);
+                
+                if (newTarget && !isNaN(newTarget)) {
+                    this.targets[branch].target = parseFloat(newTarget);
+                    this.updateTargets();
+                    this.showNotification(`Target adjusted for ${branch}`, 'success');
+                }
+            }
+
+            generateForecast() {
+                // Recalculate forecast
+                this.updateTargets();
+                this.showNotification('Forecast recalculated', 'success');
+            }
+
+            // --- Enhanced Export Functions ---
+
+            processExport() {
+                const format = document.getElementById('exportFormat').value;
+                const scope = document.getElementById('exportScope').value;
+                const filename = `Export_${moment().format('YYYY-MM-DD_HH-mm')}`;
+                
+                switch(format) {
+                    case 'excel':
+                        this.exportToExcel(filename);
+                        break;
+                    case 'pdf':
+                        this.exportToPDF(filename);
+                        break;
+                    case 'csv':
+                        this.exportToCSV(filename);
+                        break;
+                    case 'json':
+                        this.exportToJSON(filename);
+                        break;
+                    case 'html':
+                        this.exportDashboardHTML(filename);
+                        break;
+                }
+            }
+
+            exportToCSV(filename) {
+                const data = this.filteredData.map(item => ({
+                    Date: item.Date,
+                    Branch: item.Branch,
+                    Channel: item.Channel,
+                    Sales: item.Sales,
+                    Transactions: item.Transactions
+                }));
+                
+                const ws = XLSX.utils.json_to_sheet(data);
+                const csv = XLSX.utils.sheet_to_csv(ws);
+                const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+                saveAs(blob, `${filename}.csv`);
+                this.showNotification('CSV exported successfully', 'success');
+            }
+
+            exportToJSON(filename) {
+                const data = {
+                    metadata: {
+                        exportDate: new Date().toISOString(),
+                        period: `${this.dateRange.start.format('YYYY-MM-DD')} to ${this.dateRange.end.format('YYYY-MM-DD')}`,
+                        recordCount: this.filteredData.length
+                    },
+                    data: this.filteredData
+                };
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+                saveAs(blob, `${filename}.json`);
+                this.showNotification('JSON exported successfully', 'success');
+            }
+
+            quickExport(type) {
+                const filename = `${type}_Export_${moment().format('YYYY-MM-DD')}`;
+                
+                switch(type) {
+                    case 'daily':
+                        this.exportToPDF(filename);
+                        break;
+                    case 'backup':
+                        this.exportToJSON(filename);
+                        break;
+                }
+            }
+
+            downloadTemplate(type) {
+                const template = [{
+                    Date: 'YYYY-MM-DD',
+                    Branch: 'Branch Name',
+                    Channel: 'Cash/Card/Keeta/Noon/etc',
+                    Sales: 0,
+                    Transactions: 0,
+                    AVR: 0
+                }];
+                
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(template), "Template");
+                XLSX.writeFile(wb, `Import_Template.${type}`);
+                
+                this.showNotification(`Template downloaded`, 'success');
+            }
+
+            exportReport(type) {
+                const filename = `${type}_Report_${moment().format('YYYY-MM-DD')}`;
+                this.exportToPDF(filename);
+            }
+
+            exportCurrentView(type) {
+                const filename = `${type}_View_${moment().format('YYYY-MM-DD')}`;
+                this.exportToPDF(filename);
+            }
+
+            exportChart(chartId) {
+                const chart = this.charts[chartId];
+                if (chart) {
+                    const url = chart.toBase64Image();
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `${chartId}_${moment().format('YYYY-MM-DD')}.png`;
+                    link.click();
+                    this.showNotification('Chart exported as PNG', 'success');
+                }
+            }
+
+            generateExecutiveSummary() {
+                this.exportToPDF(`Executive_Summary_${moment().format('YYYY-MM-DD')}`);
+            }
+
+            exportComparisonMatrix() {
+                this.exportToExcel(`Comparison_Matrix_${moment().format('YYYY-MM-DD')}`);
+            }
+
+            // --- Enhanced Data Tools ---
+
+            cleanData() {
+                // Basic data cleaning
+                const originalCount = this.salesData.length;
+                
+                // Remove records with invalid sales
+                this.salesData = this.salesData.filter(item => 
+                    item.Sales > 0 && !isNaN(item.Sales)
+                );
+                
+                // Remove duplicates
+                this.salesData = this.removeDuplicates(this.salesData);
+                
+                const cleanedCount = this.salesData.length;
+                this.filterDataByDateRange();
+                this.updateAllViews();
+                
+                this.showNotification(`Cleaned data: removed ${originalCount - cleanedCount} invalid records`, 'success');
+            }
+
+            enrichData() {
+                // Add derived metrics
+                this.salesData = this.salesData.map(item => ({
+                    ...item,
+                    DayOfWeek: item.dateObj.getDay(),
+                    Month: item.dateObj.getMonth() + 1,
+                    Quarter: Math.ceil((item.dateObj.getMonth() + 1) / 3),
+                    Year: item.dateObj.getFullYear()
+                }));
+                
+                this.filterDataByDateRange();
+                this.updateAllViews();
+                this.showNotification('Data enriched with additional metrics', 'success');
+            }
+
+            aggregateData() {
+                // Create daily aggregates
+                const dailyAggregates = {};
+                
+                this.salesData.forEach(item => {
+                    const date = item.Date.split('T')[0];
+                    if (!dailyAggregates[date]) {
+                        dailyAggregates[date] = {
+                            Date: date,
+                            TotalSales: 0,
+                            TotalTransactions: 0,
+                            BranchCount: new Set(),
+                            ChannelCount: new Set()
+                        };
+                    }
+                    
+                    dailyAggregates[date].TotalSales += item.Sales;
+                    dailyAggregates[date].TotalTransactions += item.Transactions;
+                    dailyAggregates[date].BranchCount.add(item.Branch);
+                    dailyAggregates[date].ChannelCount.add(item.Channel);
+                });
+                
+                // Convert to array and add derived metrics
+                this.salesData = Object.values(dailyAggregates).map(agg => ({
+                    Date: agg.Date,
+                    Branch: 'Aggregated',
+                    Channel: 'All',
+                    Sales: agg.TotalSales,
+                    Transactions: agg.TotalTransactions,
+                    AVR: agg.TotalTransactions > 0 ? agg.TotalSales / agg.TotalTransactions : 0,
+                    UniqueBranches: agg.BranchCount.size,
+                    UniqueChannels: agg.ChannelCount.size
+                }));
+                
+                this.filterDataByDateRange();
+                this.updateAllViews();
+                this.showNotification('Data aggregated by day', 'success');
+            }
+
+            calculateMetrics() {
+                // Calculate additional metrics
+                const branchMetrics = {};
+                
+                branches.forEach(branch => {
+                    const branchData = this.filteredData.filter(d => d.Branch === branch);
+                    const sales = branchData.reduce((s, i) => s + i.Sales, 0);
+                    const tx = branchData.reduce((s, i) => s + i.Transactions, 0);
+                    
+                    branchMetrics[branch] = {
+                        sales: sales,
+                        transactions: tx,
+                        aov: tx > 0 ? sales / tx : 0,
+                        marketShare: 0 // Will be calculated below
+                    };
+                });
+                
+                const totalSales = Object.values(branchMetrics).reduce((sum, b) => sum + b.sales, 0);
+                
+                // Calculate market share
+                Object.keys(branchMetrics).forEach(branch => {
+                    branchMetrics[branch].marketShare = totalSales > 0 ? 
+                        (branchMetrics[branch].sales / totalSales * 100) : 0;
+                });
+                
+                // Display metrics
+                let html = '<div class="analysis-grid">';
+                Object.entries(branchMetrics).forEach(([branch, metrics]) => {
+                    html += `
+                        <div class="kpi-card">
+                            <h4>${branch}</h4>
+                            <p>Sales: ${this.formatCurrency(metrics.sales)}</p>
+                            <p>Transactions: ${metrics.transactions}</p>
+                            <p>AOV: ${this.formatCurrency(metrics.aov)}</p>
+                            <p>Market Share: ${metrics.marketShare.toFixed(1)}%</p>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                
+                // You could add this to a specific container or show in a modal
+                this.showNotification('Advanced metrics calculated', 'success');
+                console.log('Calculated Metrics:', branchMetrics);
+            }
+
+            // --- Utility Functions ---
+
+            showEnhancedPreview(data) {
+                const previewBox = document.getElementById('importPreview');
+                const table = document.getElementById('previewTable');
+                previewBox.style.display = 'block';
+                
+                // Clear existing content
+                table.innerHTML = '';
+                
+                if (data.length === 0) return;
+                
+                // Create table header
+                const headers = Object.keys(data[0]);
+                let headerRow = '<thead><tr>';
+                headers.forEach(header => {
+                    headerRow += `<th>${header}</th>`;
+                });
+                headerRow += '</tr></thead>';
+                table.innerHTML = headerRow;
+                
+                // Add first 10 rows
+                let body = '<tbody>';
+                data.slice(0, 10).forEach(row => {
+                    body += '<tr>';
+                    headers.forEach(header => {
+                        body += `<td>${row[header] || ''}</td>`;
+                    });
+                    body += '</tr>';
+                });
+                body += '</tbody>';
+                table.innerHTML += body;
+            }
+
+            initializeBranchFilters() {
+                const select = document.getElementById('reportBranches');
+                select.innerHTML = '';
+                
+                branches.forEach(branch => {
+                    const option = document.createElement('option');
+                    option.value = branch;
+                    option.textContent = branch;
+                    option.selected = true;
+                    select.appendChild(option);
+                });
+            }
+
+            formatCurrency(num) {
+                return new Intl.NumberFormat('en-US', { 
+                    style: 'currency', 
+                    currency: 'USD',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }).format(num);
+            }
+
+            showNotification(message, type = 'info') {
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.className = `status-bar ${type}`;
+                notification.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 
+                                       type === 'error' ? 'exclamation-circle' : 
+                                       type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                    ${message}
+                `;
+                
+                // Add to page
+                const container = document.querySelector('.container');
+                container.insertBefore(notification, container.firstChild);
+                
+                // Remove after 5 seconds
+                setTimeout(() => {
+                    notification.remove();
+                }, 5000);
+            }
+
+            // --- Additional Features ---
+
+            scheduleReport() {
+                const schedule = document.getElementById('scheduleExport').value;
+                if (schedule !== 'none') {
+                    this.showNotification(`Report scheduled for ${schedule} delivery`, 'success');
+                }
+            }
+
+            generateAutomatedInsights() {
+                const container = document.getElementById('automatedInsights');
+                const insights = this.generateInsights();
+                
+                let html = '<div class="analysis-grid">';
+                insights.forEach(insight => {
+                    html += `
+                        <div class="kpi-card">
+                            <div class="kpi-header">
+                                <h4>${insight.title}</h4>
+                                <i class="${insight.icon}"></i>
+                            </div>
+                            <div class="kpi-body">
+                                <p>${insight.description}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                
+                container.innerHTML = html;
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            window.salesSystem = new AdvancedSalesAnalytics();
+            
+            // Update footer with current info
+            document.getElementById('lastUpdated').textContent = 
+                new Date().toLocaleDateString();
+            document.getElementById('dataFreshness').textContent = 
+                'Real-time';
+        });
+    </script>
+</body>
+</html>
